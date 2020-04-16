@@ -1,41 +1,17 @@
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# See https://help.github.com/ignore-files/ for more about ignoring files.
 
-# Precompiled Headers
-*.gch
-*.pch
+# dependencies
+node_modules
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# testing
+coverage
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# production
+build
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# misc
+.DS_Store
 
-# Debug files
-*.dSYM/
-*.su
-
-# Own
-*.p
-*.sp
-*.d
-src/tmp
-*.map
-.vscode
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
