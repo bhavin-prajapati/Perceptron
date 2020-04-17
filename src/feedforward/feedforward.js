@@ -1,19 +1,18 @@
-import { dotProduct, vecAdd, scalarMatMul } from "../util/math";
-
 export class FeedForward {
-  constructor(inputData, outputData, weights, bias, epochs) {
+  constructor(inputData, outputData, epochs) {
     this.inputData = inputData;
     this.outputData = outputData;
-    this.weights = weights;
-    this.bias = bias;
+    this.weights = [];
+    this.bias = 0.0;
     this.epochs = epochs;
   }
 
   //Random Initialization
   initialize() {
+    this.weights = new Array(this.inputData[0].length);
     this.bias = 0.0;
     for (let i = 0; i < this.inputData[0].length; i++) {
-      this.weights[i] += Math.random();
+      this.weights[i] = Math.random();
     }
   }
 
@@ -22,15 +21,46 @@ export class FeedForward {
     return 1.0 / (1.0 + Math.exp(-x));
   }
 
+  //Linear Algebra Functions
+  dotProduct = (v1, v2) => {
+    let dot = 0;
+    for (let i = 0; i < v1.length; i++) {
+      dot += v1[i] * v2[i];
+    }
+    return dot;
+  };
+
+  scalarMatMul = (s, mat) => {
+    let result = Array(mat.length);
+    for (let i = 0; i < result.length; i++) {
+      result[i] = 0;
+    }
+    for (let i = 0; i < mat.length; i++) {
+      result[i] = s * mat[i];
+    }
+    return result;
+  };
+
+  vecAdd = (v1, v2) => {
+    let add = Array(v1.length);
+    for (let i = 0; i < add.length; i++) {
+      add[i] = 0;
+    }
+    for (let i = 0; i < v1.length; i++) {
+      add[i] = v1[i] + v2[i];
+    }
+    return add;
+  };
+
   //Forward Propagation
   forwardPass(x) {
-    return this.sigmoid(dotProduct(this.weights, x) + this.bias);
+    return this.sigmoid(this.dotProduct(this.weights, x) + this.bias);
   }
 
   //Calculate Gradients of Weights
   gradW(x, y) {
     let pred = this.forwardPass(x);
-    return scalarMatMul(-(pred - y) * pred * (1 - pred), x);
+    return this.scalarMatMul(-(pred - y) * pred * (1 - pred), x);
   }
 
   //Calculate Gradients of Bias
@@ -42,15 +72,18 @@ export class FeedForward {
   //Train the Perceptron for n epochs
   train() {
     for (let i = 0; i < this.epochs; i++) {
-      let dw = [];
+      let dw = new Array(this.inputData[0].length);
+      for (let j = 0; j < dw.length; j++) {
+        dw[j] = 0;
+      }
       let db = 0;
       let length = this.inputData.length;
       for (let j = 0; j < length; j++) {
-        dw = vecAdd(dw, this.gradW(this.inputData[j], this.outputData[j]));
+        dw = this.vecAdd(dw, this.gradW(this.inputData[j], this.outputData[j]));
         db += this.gradB(this.inputData[j], this.outputData[j]);
       }
-      dw = scalarMatMul(2 / this.outputData.length, dw);
-      this.weights = vecAdd(this.weights, dw);
+      dw = this.scalarMatMul(2 / this.outputData.length, dw);
+      this.weights = this.vecAdd(this.weights, dw);
       this.bias += (db * 2) / this.outputData.length;
     }
   }

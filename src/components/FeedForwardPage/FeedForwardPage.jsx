@@ -3,11 +3,6 @@ import styled from "styled-components";
 import { Grid, Row, Col, Table } from "react-bootstrap";
 import { FeedForward } from "../../feedforward/feedforward";
 
-const InputContainer = styled.div`
-  display: block;
-  margin: 20px;
-`;
-
 export class FeedForwardPage extends Component {
   render() {
     let AndGate = new FeedForward(
@@ -18,8 +13,6 @@ export class FeedForwardPage extends Component {
         [1, 1],
       ],
       [0, 0, 0, 1],
-      [0.5, 0.5, 0.5, 0.5],
-      0.5,
       1000
     );
     AndGate.initialize();
