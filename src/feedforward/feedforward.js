@@ -30,18 +30,7 @@ export class FeedForward {
     return dot;
   };
 
-  scalarMatMul = (s, mat) => {
-    let result = Array(mat.length);
-    for (let i = 0; i < result.length; i++) {
-      result[i] = 0;
-    }
-    for (let i = 0; i < mat.length; i++) {
-      result[i] = s * mat[i];
-    }
-    return result;
-  };
-
-  vecAdd = (v1, v2) => {
+  addVectors = (v1, v2) => {
     let add = Array(v1.length);
     for (let i = 0; i < add.length; i++) {
       add[i] = 0;
@@ -52,6 +41,17 @@ export class FeedForward {
     return add;
   };
 
+  multiplyVector = (s, vec) => {
+    let result = Array(vec.length);
+    for (let i = 0; i < result.length; i++) {
+      result[i] = 0;
+    }
+    for (let i = 0; i < vec.length; i++) {
+      result[i] = s * vec[i];
+    }
+    return result;
+  };
+
   //Forward Propagation
   forwardPass(x) {
     return this.sigmoid(this.dotProduct(this.weights, x) + this.bias);
@@ -60,7 +60,7 @@ export class FeedForward {
   //Calculate Gradients of Weights
   gradW(x, y) {
     let pred = this.forwardPass(x);
-    return this.scalarMatMul(-(pred - y) * pred * (1 - pred), x);
+    return this.multiplyVector(-(pred - y) * pred * (1 - pred), x);
   }
 
   //Calculate Gradients of Bias
@@ -79,11 +79,14 @@ export class FeedForward {
       let db = 0;
       let length = this.inputData.length;
       for (let j = 0; j < length; j++) {
-        dw = this.vecAdd(dw, this.gradW(this.inputData[j], this.outputData[j]));
+        dw = this.addVectors(
+          dw,
+          this.gradW(this.inputData[j], this.outputData[j])
+        );
         db += this.gradB(this.inputData[j], this.outputData[j]);
       }
-      dw = this.scalarMatMul(2 / this.outputData.length, dw);
-      this.weights = this.vecAdd(this.weights, dw);
+      dw = this.multiplyVector(2 / this.outputData.length, dw);
+      this.weights = this.addVectors(this.weights, dw);
       this.bias += (db * 2) / this.outputData.length;
     }
   }
